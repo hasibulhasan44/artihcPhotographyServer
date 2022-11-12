@@ -97,7 +97,7 @@ async function run() {
       const decoded = req.decoded;
       const email = req.query.email;
       if (decoded?.email !== email) {
-        res.status(403).send({ message: "forbidden" });
+       return res.status(403).send({ message: "forbidden" });
       }
       const query = { email: email };
       const cursor = reviewCollection.find(query).sort({ timeStamp: -1 });
@@ -105,12 +105,7 @@ async function run() {
       res.send(reviews);
     });
 
-    app.delete("/myReviews/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: ObjectId(id) };
-      const result = await reviewCollection.deleteOne(query);
-      res.send(result);
-    });
+    
 
     app.get("/editReview/:id", async (req, res) => {
       const id = req.params.id;
@@ -119,7 +114,21 @@ async function run() {
       res.send(result);
     });
 
-    
+    app.patch("/editReview/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const newMessage = req.body.editedReview;
+      const newReview = {
+        $set: {
+          review: newMessage,
+        },
+      };
+      const result = await reviewCollection.updateOne(query, newReview);
+      res.send(result);
+    });
+  } finally {
+  }
+}
 run().catch((error) => console.error(error));
 
 app.get("/", (req, res) => {
