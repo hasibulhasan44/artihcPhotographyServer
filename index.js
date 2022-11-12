@@ -50,7 +50,19 @@ async function run() {
       res.send({ token });
     });
 
-    
+    app.get("/services", async (req, res) => {
+      const query = {};
+      const cursor = serviceCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get("/home/services", async(req, res) => {
+      const query = {}
+      const cursor = serviceCollection.find(query)
+      const result =await cursor.limit(3).toArray()
+      res.send(result)
+    })
 
     app.post("/services", async (req, res) => {
       const service = req.body;
